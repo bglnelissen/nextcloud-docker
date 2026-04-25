@@ -1,0 +1,77 @@
+volumes:
+  nextcloud_html:
+  nextcloud_db:
+  nextcloud_redis:
+
+services:
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: unless-stopped
+    ports:
+      - "8457:80"
+    depends_on:
+      nextcloud_db:
+        condition: service_healthy
+      nextcloud_redis:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=nextcloud_db
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_HOST} ${NEXTCLOUD_EXTRA_HOST} 10.0.0.3
+      - REDIS_HOST=nextcloud_redis
+      - OVERWRITEHOST=${NEXTCLOUD_HOST}
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITECLIURL=https://${NEXTCLOUD_HOST}
+      # Vertrouw de nginx-proxy als reverse proxy
+      - TRUSTED_PROXIES=10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+    volumes:
+      - nextcloud_html:/var/www/html
+      - /mnt/Pruimenboom/Nextcloud:/var/www/html/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/status.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  nextcloud_db:
+    image: mariadb:11
+    container_name: nextcloud_db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MARIADB_AUTO_UPGRADE=1
+    # Aanbevolen instellingen voor Nextcloud
+    command: >
+      --transaction-isolation=READ-COMMITTED
+      --binlog-format=ROW
+      --innodb-file-per-table=1
+      --skip-innodb-read-only-compressed
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+
+  nextcloud_redis:
+    image: redis:7-alpine
+    container_name: nextcloud_redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - nextcloud_redis:/data
