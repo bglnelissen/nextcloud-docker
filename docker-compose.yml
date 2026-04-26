@@ -63,6 +63,26 @@ services:
     volumes:
       - nextcloud_db:/var/lib/mysql
 
+  nextcloud_cron:
+    image: nextcloud:latest
+    container_name: nextcloud_cron
+    restart: unless-stopped
+    entrypoint: /cron.sh
+    depends_on:
+      nextcloud_db:
+        condition: service_healthy
+      nextcloud_redis:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=nextcloud_db
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - REDIS_HOST=nextcloud_redis
+    volumes:
+      - nextcloud_html:/var/www/html
+      - /mnt/Pruimenboom/Nextcloud:/var/www/html/data
+
   nextcloud_redis:
     image: redis:7-alpine
     container_name: nextcloud_redis

@@ -18,6 +18,7 @@ Beide domeinen wijzen naar dezelfde Nextcloud instantie. De primaire URL is `nex
 | `nextcloud` | `nextcloud:latest` | Nextcloud applicatie (Apache + PHP) |
 | `nextcloud_db` | `mariadb:11` | Database |
 | `nextcloud_redis` | `redis:7-alpine` | Caching + file locking |
+| `nextcloud_cron` | `nextcloud:latest` | Achtergrondtaken (elke 5 minuten) |
 
 ### Caching
 - **APCu** — lokale in-memory cache (ingebouwd in het Nextcloud image)
@@ -102,6 +103,11 @@ docker compose down
 **Nextcloud CLI (occ):**
 ```bash
 docker exec -u www-data nextcloud php occ <commando>
+```
+
+**Achtergrondtaken (cron) instellen** (eenmalig na installatie):
+```bash
+docker exec -u www-data nextcloud php occ background:cron
 ```
 
 **Brute-force reset voor een IP:**
