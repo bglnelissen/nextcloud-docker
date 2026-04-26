@@ -118,6 +118,8 @@ docker exec -u www-data nextcloud php occ maintenance:repair --include-expensive
 
 **Onderhoudsvenster** wordt automatisch ingesteld via `config/apcu.config.php` (01:00–05:00 UTC = 02:00–06:00 CET).
 
+**Standaard telefoonregio en server ID** worden automatisch ingesteld via `config/apcu.config.php`.
+
 **Brute-force reset voor een IP:**
 ```bash
 docker exec -u www-data nextcloud php occ security:bruteforce:reset <ip>
@@ -135,6 +137,21 @@ docker volume rm nextcloud_nextcloud_html nextcloud_nextcloud_db
 docker run --rm -v /mnt/Pruimenboom/Nextcloud:/data alpine chown -R 33:33 /data
 docker compose up -d
 ```
+
+---
+
+## Nog in te stellen
+
+- **E-mail (SMTP)** — nog niet geconfigureerd. In te stellen via _Instellingen → Basisinstellingen → E-mailserver_, of via:
+  ```bash
+  docker exec -u www-data nextcloud php occ config:system:set mail_smtphost --value="<host>"
+  docker exec -u www-data nextcloud php occ config:system:set mail_smtpport --type=integer --value=587
+  docker exec -u www-data nextcloud php occ config:system:set mail_smtpauth --type=boolean --value=true
+  docker exec -u www-data nextcloud php occ config:system:set mail_smtpname --value="<gebruiker>"
+  docker exec -u www-data nextcloud php occ config:system:set mail_smtppassword --value="<wachtwoord>"
+  docker exec -u www-data nextcloud php occ config:system:set mail_from_address --value="nextcloud"
+  docker exec -u www-data nextcloud php occ config:system:set mail_domain --value="guu.st"
+  ```
 
 ---
 
