@@ -111,6 +111,11 @@ docker exec -u www-data nextcloud php occ <commando>
 docker exec -u www-data nextcloud php occ background:cron
 ```
 
+**Mimetype migraties uitvoeren** (eenmalig na installatie of upgrade):
+```bash
+docker exec -u www-data nextcloud php occ maintenance:repair --include-expensive
+```
+
 **Onderhoudsvenster** wordt automatisch ingesteld via `config/apcu.config.php` (01:00–05:00 UTC = 02:00–06:00 CET).
 
 **Brute-force reset voor een IP:**
