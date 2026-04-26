@@ -32,6 +32,7 @@ services:
     volumes:
       - nextcloud_html:/var/www/html
       - /mnt/Pruimenboom/Nextcloud:/var/www/html/data
+      - ./config/apcu.config.php:/var/www/html/config/apcu.config.php:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/status.php"]
       interval: 30s
@@ -82,6 +83,7 @@ services:
     volumes:
       - nextcloud_html:/var/www/html
       - /mnt/Pruimenboom/Nextcloud:/var/www/html/data
+      - ./config/apcu.config.php:/var/www/html/config/apcu.config.php:ro
 
   nextcloud_redis:
     image: redis:7-alpine

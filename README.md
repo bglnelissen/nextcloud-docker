@@ -30,9 +30,10 @@ Beide domeinen wijzen naar dezelfde Nextcloud instantie. De primaire URL is `nex
 
 ```
 /home/bas/nextcloud/
-├── docker-compose.yml    # Stack definitie
-├── .env                  # Wachtwoorden en domeinnamen
-└── config/               # (niet meer actief gebruikt)
+├── docker-compose.yml                # Stack definitie
+├── .env                              # Wachtwoorden en domeinnamen
+└── config/
+    └── apcu.config.php               # APCu cache + systeeminstellingen
 ```
 
 ### Data opslag
@@ -109,6 +110,8 @@ docker exec -u www-data nextcloud php occ <commando>
 ```bash
 docker exec -u www-data nextcloud php occ background:cron
 ```
+
+**Onderhoudsvenster** wordt automatisch ingesteld via `config/apcu.config.php` (01:00–05:00 UTC = 02:00–06:00 CET).
 
 **Brute-force reset voor een IP:**
 ```bash
