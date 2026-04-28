@@ -512,20 +512,60 @@ git push origin main --tags
 
 ## 8. Huidige status
 
-**Op het moment van schrijven:**
-- Plan is volledig uitgedacht
-- Niets is gebouwd
-- GitHub repos bestaan nog niet
-- apps-extra/ directory in Docker mogelijk nog niet geconfigureerd
+**Op het moment van schrijven (bijgewerkt 2026-04-28):**
+
+### Fase 0 — KLAAR ✓
+- Node 20.20.2 via nvm (`~/.nvm`)
+- Composer via Docker image (`docker run --rm composer:2`)
+- `gh` CLI op `~/.local/bin/gh`, ingelogd als `bglnelissen`
+- `apps-extra/` bind mount actief in Docker én geregistreerd bij NC (`occ config:system:set apps_paths 2 ...`)
+- GitHub repos aangemaakt: `github.com/bglnelissen/nextcloud-codeedit` en `github.com/bglnelissen/nextcloud-mdexport`
+
+### Fase 1 — IN UITVOERING (stappen 6–11 gedaan, stap 12+ open)
+
+**Wat gebouwd is:**
+- Volledige mappenstructuur `~/projects/nextcloud-apps/apps-extra/codeedit/`
+- `appinfo/info.xml`, `appinfo/routes.php`
+- `lib/AppInfo/Application.php` — luistert naar `OCA\Files\Event\LoadAdditionalScriptsEvent`
+- `lib/Listener/LoadEditorListener.php` — laadt script met `Util::addScript(..., 'files')`
+- `lib/Controller/FileController.php` — GET/PUT file content via OCP\Files, ETag check
+- `src/languages/` — markdown, php, python, bash, swift (lazy-loaded)
+- `src/filesplugin.ts` — registreert `FileAction` via `@nextcloud/files`
+- `src/Editor.vue` — CodeMirror 6 in NcDialog, autosave, Cmd+S, dark/light mode
+- `src/main.ts` — Vite entry point
+- `vite.config.ts` — `createAppConfig({ main: 'src/main.ts' })`
+- Build werkt: `js/codeedit-main.mjs` (1.4MB), taal-chunks gesplitst
+
+**Kritiek openstaand probleem — fix klaar maar nog niet gebouwd:**
+
+NC 33 gebruikt `@nextcloud/files` **v4** voor het file-action register.
+v3 (wat we eerder gebruikten) schrijft naar `window._nc_fileactions` — NC 33 leest daar niet meer.
+v4 gebruikt `scopedGlobals.fileActions` via het gedeelde chunk `folder-29HuacU_.mjs`
+dat NC 33 al serveert in `/var/www/html/dist/`. Daarmee is het register reactief en gedeeld.
+
+**Fix:**
+- `package.json` staat al op `@nextcloud/files: "^4.0.0"` (v4.0.0 geïnstalleerd)
+- **Volgende actie**: controleer of v4 API breaking changes heeft vs v3 voor `FileAction`, `enabled()`, `exec()`, rebuild, test
+
+**Debug-logs nog in code (verwijderen na fix):**
+- `filesplugin.ts` — `console.log('[codeedit] filesplugin loaded')`, `'[codeedit] registering file action'`, `'[codeedit] enabled() called ...'`
+
+**Bekende gotchas gevonden tijdens deze sessie:**
+- `@nextcloud/vite-config` vereist `"type": "module"` in package.json (ESM-only)
+- `@nextcloud/vite-config` vereist vite v7 (niet v5)
+- Entry point in `createAppConfig` moet `main` heten, niet `codeedit-main` (anders dubbel prefix in output)
+- `Util::addScript(APP_ID, 'codeedit-main', 'files')` — derde parameter `'files'` is vereist (laadvolgorde)
+- Listener moet `LoadAdditionalScriptsEvent` gebruiken, niet `BeforeTemplateRenderedEvent`
+- Syntaxhighlighting vereist `syntaxHighlighting(defaultHighlightStyle, { fallback: true })` expliciet
 
 **Volgende concrete stappen (in volgorde):**
 
-### Fase 0 — Voorbereiding (~30 min)
-1. SSH naar mini.local
-2. Inspecteer huidige Docker NC setup (sectie 6.2)
-3. Configureer apps-extra/ bind mount (sectie 6.4)
-4. Verifieer Node 20+ en Composer (sectie 6.6)
-5. Maak GitHub repos aan (twee, AGPL-3.0)
+### Fase 0 — Voorbereiding (~30 min) — KLAAR ✓
+1. ~~SSH naar mini.local~~ — we zitten al op de server
+2. ~~Inspecteer huidige Docker NC setup~~ — gedaan
+3. ~~Configureer apps-extra/ bind mount~~ — gedaan
+4. ~~Verifieer Node 20+ en Composer~~ — gedaan
+5. ~~Maak GitHub repos aan (twee, AGPL-3.0)~~ — gedaan
 
 ### Fase 1 — Plugin 1 v0.1.0 (~3-4 sessies)
 6. Scratch setup: `npm init` + dependencies (sectie 3.2)
