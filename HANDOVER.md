@@ -545,10 +545,9 @@ dat NC 33 al serveert in `/var/www/html/dist/`. Daarmee is het register reactief
 
 **Fix:**
 - `package.json` staat al op `@nextcloud/files: "^4.0.0"` (v4.0.0 geïnstalleerd)
-- **Volgende actie**: controleer of v4 API breaking changes heeft vs v3 voor `FileAction`, `enabled()`, `exec()`, rebuild, test
+- **Opgelost ✓**: v4 API geïmplementeerd. `FileAction` klasse bestaat niet meer — plain object aan `registerFileAction()`. `enabled()` en `exec()` ontvangen `ActionContext { nodes, view, folder, contents }`. Syntax highlighting werkt (kleuren zichtbaar). "Open in Code Editor" verschijnt in contextmenu. Debug logs verwijderd.
 
-**Debug-logs nog in code (verwijderen na fix):**
-- `filesplugin.ts` — `console.log('[codeedit] filesplugin loaded')`, `'[codeedit] registering file action'`, `'[codeedit] enabled() called ...'`
+**Debug-logs: verwijderd ✓**
 
 **Bekende gotchas gevonden tijdens deze sessie:**
 - `@nextcloud/vite-config` vereist `"type": "module"` in package.json (ESM-only)
@@ -568,15 +567,15 @@ dat NC 33 al serveert in `/var/www/html/dist/`. Daarmee is het register reactief
 5. ~~Maak GitHub repos aan (twee, AGPL-3.0)~~ — gedaan
 
 ### Fase 1 — Plugin 1 v0.1.0 (~3-4 sessies)
-6. Scratch setup: `npm init` + dependencies (sectie 3.2)
-7. info.xml schrijven (template uit 4.5)
-8. Application.php + FileController.php basis
-9. filesplugin.ts: file action voor onze extensies (sectie 4.2)
-10. Editor.vue met CodeMirror voor markdown
-11. Voeg swift, bash, php, python language packs toe
-12. Save logic + ETag conflict handling
-13. NC light/dark theme integratie
-14. PHPUnit + Vitest skeleton tests
+6. ~~Scratch setup: `npm init` + dependencies~~ ✓
+7. ~~info.xml schrijven~~ ✓
+8. ~~Application.php + FileController.php basis~~ ✓
+9. ~~filesplugin.ts: file action voor onze extensies~~ ✓
+10. ~~Editor.vue met CodeMirror voor markdown~~ ✓
+11. ~~Voeg swift, bash, php, python language packs toe~~ ✓
+12. ~~Save logic + ETag conflict handling~~ ✓
+13. ~~NC light/dark theme integratie~~ ✓
+14. PHPUnit + Vitest skeleton tests  ← **VOLGENDE STAP**
 15. Test, debug, eerste release tag v0.1.0
 
 ### Fase 2 — Plugin 2 v0.1.0 (~3-4 sessies)
