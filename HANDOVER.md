@@ -578,17 +578,24 @@ dat NC 33 al serveert in `/var/www/html/dist/`. Daarmee is het register reactief
 14. PHPUnit + Vitest skeleton tests  ← **VOLGENDE STAP**
 15. Test, debug, eerste release tag v0.1.0
 
-### Fase 2 — Plugin 2 v0.1.0 (~3-4 sessies)
-16. Scratch setup met composer dependencies
-17. info.xml + Application.php
-18. ExportController + HtmlRenderer + PathValidator
-19. PdfConverter via mPDF (default)
-20. DocxConverter via PhpWord
-21. ThemeRepository (defaults uit app, custom uit IAppData)
-22. ExportDialog.vue + PersonalSettings.vue
-23. wkhtmltopdf auto-detect en optionele backend
-24. Tests + DOCX limitaties documenteren in README
-25. Test, debug, eerste release tag v0.1.0
+### Fase 2 — Plugin 2 v0.1.0 — KLAAR ✓
+16. ~~Scratch setup met composer dependencies~~ ✓
+17. ~~info.xml + Application.php~~ ✓
+18. ~~ExportController + HtmlRenderer + PathValidator~~ ✓
+19. ~~PdfConverter via mPDF~~ ✓
+20. ~~DocxConverter via PhpWord~~ ✓
+21. ~~ThemeRepository (defaults uit app, custom via IAppData)~~ ✓
+22. ~~ExportDialog.vue~~ ✓ (PersonalSettings.vue = v0.2.0)
+23. wkhtmltopdf auto-detect — v0.2.0
+24. Tests — v0.2.0
+25. ~~Release tag v0.1.0~~ ✓
+
+**Bekende gotchas mdexport:**
+- NcSelect v-model geeft heel option-object terug — `:reduce="opt => opt.value"` vereist
+- `axios.isAxiosError` bestaat niet op `@nextcloud/axios` instance — duck-type gebruiken
+- Vendor autoloader moet in `Application.php` geladen worden via `require_once`
+- Regular `Controller` gebruiken (niet `OCSController`) — frontend leest plain JSON
+- Output pad default = zelfde map als bronbestand via `sourceFolder()` in filesplugin.ts
 
 ### Fase 3 — Polish en publicatie
 26. Screenshots, README's, demo video
