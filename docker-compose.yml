@@ -33,6 +33,7 @@ services:
       - nextcloud_html:/var/www/html
       - /mnt/Pruimenboom/Nextcloud:/var/www/html/data
       - ./config/apcu.config.php:/var/www/html/config/apcu.config.php:ro
+      - ~/projects/nextcloud-apps/apps-extra:/var/www/html/apps-extra
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/status.php"]
       interval: 30s
@@ -84,6 +85,7 @@ services:
       - nextcloud_html:/var/www/html
       - /mnt/Pruimenboom/Nextcloud:/var/www/html/data
       - ./config/apcu.config.php:/var/www/html/config/apcu.config.php:ro
+      - ~/projects/nextcloud-apps/apps-extra:/var/www/html/apps-extra
 
   nextcloud_redis:
     image: redis:7-alpine
